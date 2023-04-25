@@ -1,25 +1,27 @@
 from datetime import datetime, timedelta
+
 from airflow import DAG
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
-from AskCustomOperator.ask_create_insert_query import AskCreateInsertQueryOperator
-from AskCustomOperator.ask_google_sheets_read_spreadsheet_operator import AskGoogleSheetsReadSpreadsheetOperator
+from ask_operator import AskCreateInsertQueryOperator, GoogleSheetsReadSpreadsheetOperator
+
 
 with DAG(
-    dag_id='read_from_sheet',
+    dag_id='transfer_data',
     default_args={
         'retries': 1,
         'retry_delay': timedelta(minutes=5),
     },
     schedule_interval=timedelta(days=1),
-    start_date=datetime(2022, 5, 20),
+    start_date=datetime(2023, 4, 1),
     catchup=False,
 ) as dag:
 
-    read_data_from_sheet = AskGoogleSheetsReadSpreadsheetOperator(
+    read_data_from_sheet = GoogleSheetsReadSpreadsheetOperator(
         task_id='read_data_from_sheet',
-        spreadsheet_id='1WumnL8PAZGZWvEEp7u7UEVCVLvBw7QZJvN89fUQdHoc',
-        spreadsheet_gid='0',
+        range_="A:G",
+        gcp_conn_id='ask-google-cloud',
+        spreadsheet_id='{{ var.value.ask_google_sheet_id }}',
     )
 
     create_query = AskCreateInsertQueryOperator(

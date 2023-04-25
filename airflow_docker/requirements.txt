@@ -1,2 +1,6 @@
+apache-airflow[async,celery,postgres,google]==2.5.3
 apache-airflow-providers-postgres==5.4.0
-pandas==2.0.0
+pandas==1.5.3
+redis
+
+-c https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${IMAGE_PYTHON_VERSION}.txt

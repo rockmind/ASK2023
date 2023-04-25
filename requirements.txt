@@ -1,0 +1,4 @@
+apache-airflow[async,postgres,google]==2.5.3
+
+-r airflow_docker/requirements.txt
+

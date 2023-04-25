@@ -1,4 +1,4 @@
-from typing import Any, Dict, Sequence, Optional, List
+from typing import Any, Sequence, Optional, List
 
 from airflow.models import BaseOperator
 from json import loads
@@ -10,15 +10,15 @@ class AskCreateInsertQueryOperator(BaseOperator):
     def __init__(
             self,
             *,
-            table_name: str,
             data: str,
+            table_name: str,
             unique_fields: Optional[List[str]] = None,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
-        self.table_name = table_name
         self.data = data
+        self.table_name = table_name
         self.unique_fields = unique_fields
 
     def execute(self, context: Any) -> str:
