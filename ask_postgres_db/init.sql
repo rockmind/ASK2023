@@ -16,6 +16,9 @@ ALTER TABLE users OWNER TO my_postgres;
 CREATE UNIQUE INDEX users_username_uindex
     ON users (user_name);
 
+ALTER TABLE users ADD CONSTRAINT users_pk PRIMARY KEY (user_name);
+
+
 
 CREATE OR REPLACE FUNCTION trigger_set_timestamp()
 RETURNS TRIGGER AS $$
