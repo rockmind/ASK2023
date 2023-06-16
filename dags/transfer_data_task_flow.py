@@ -35,7 +35,7 @@ def transfer_data_task_flow():
     def update_table(data: Dict):
         df = DataFrame.from_dict(data)
 
-        conn = Connection.get_connection_from_secrets("my_postgres")
+        conn = Connection.get_connection_from_secrets("ask_db")
         engine = create_engine(
             f"postgresql://{conn.login}:{conn.password}@{conn.host}:{conn.port}/{conn.schema}"
         )

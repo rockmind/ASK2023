@@ -19,21 +19,20 @@ with DAG(
 
     read_data_from_sheet = GoogleSheetsReadSpreadsheetOperator(
         task_id='read_data_from_sheet',
-        range_="A:G",
-        gcp_conn_id='ask-google-cloud',
+        gcp_conn_id='ask_google_cloud',
         spreadsheet_id='{{ var.value.ask_google_sheet_id }}',
     )
 
     create_query = AskCreateInsertQueryOperator(
         task_id='create_query',
-        table_name='users',
+        user='{{ conn.ask_db.login }}',
+        schema='{{ var.value.ask_db_schema_name }}',
         data="{{ task_instance.xcom_pull(task_ids='read_data_from_sheet') }}",
-        unique_fields=['user_name'],
     )
 
     update_table = PostgresOperator(
         task_id="update_table",
-        postgres_conn_id="my_postgres",
+        postgres_conn_id="ask_db",
         sql="{{ task_instance.xcom_pull(task_ids='create_query') }}",
     )
 

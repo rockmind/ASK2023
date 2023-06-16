@@ -94,16 +94,16 @@ services:
     image: postgres:15.2-alpine
     restart: always
     environment:
-      POSTGRES_USER: my_postgres
-      POSTGRES_PASSWORD: my_postgres
-      POSTGRES_DB: my_postgres
+      POSTGRES_USER: ${ASK_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${ASK_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${ASK_POSTGRES_DB}
     ports:
       - '2345:5432'
     volumes:
       - ./ask_postgres_db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ask_postgres_db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "my_postgres"]
+      test: ["CMD", "pg_isready", "-U", "${ASK_POSTGRES_USER}", "-d", "${ASK_POSTGRES_DB}"]
       interval: 5s
       retries: 5
 
