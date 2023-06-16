@@ -1,5 +1,4 @@
-export AIRFLOW_PROJ_DIR=$(pwd)
-echo $AIRFLOW_PROJ_DIR
+source <(cat .env | sed 's/^/export /g')
 
 docker-compose up airflow-init
 
