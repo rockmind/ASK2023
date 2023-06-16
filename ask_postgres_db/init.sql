@@ -1,1 +1,1 @@
-CREATE SCHEMA synchronizing_sheets AUTHORIZATION  ask_postgres_user;
+CREATE SCHEMA IF NOT EXISTS synchronizing_sheets AUTHORIZATION  ask_postgres_user;

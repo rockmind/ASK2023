@@ -3,30 +3,30 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
-from ask_operator import AskCreateInsertQueryOperator, GoogleSheetsReadSpreadsheetOperator
-
+from ask import (
+    AskSpreadsheetSynchronizeQueryOperator,
+    GoogleSheetsReadSpreadsheetOperator,
+)
 
 with DAG(
-    dag_id='transfer_data',
-    default_args={
-        'retries': 1,
-        'retry_delay': timedelta(minutes=5),
-    },
-    schedule_interval=timedelta(days=1),
-    start_date=datetime(2023, 4, 1),
-    catchup=False,
+        dag_id="transfer_data",
+        default_args={
+            "retries": 0,
+        },
+        schedule_interval=timedelta(minutes=1),
+        start_date=datetime(2023, 4, 1),
+        catchup=False,
 ) as dag:
-
     read_data_from_sheet = GoogleSheetsReadSpreadsheetOperator(
-        task_id='read_data_from_sheet',
-        gcp_conn_id='ask_google_cloud',
-        spreadsheet_id='{{ var.value.ask_google_sheet_id }}',
+        task_id="read_data_from_sheet",
+        gcp_conn_id="ask_google_cloud",
+        spreadsheet_id="{{ var.value.ask_google_sheet_id }}",
     )
 
-    create_query = AskCreateInsertQueryOperator(
-        task_id='create_query',
-        user='{{ conn.ask_db.login }}',
-        schema='{{ var.value.ask_db_schema_name }}',
+    create_query = AskSpreadsheetSynchronizeQueryOperator(
+        task_id="create_query",
+        user="{{ conn.ask_db.login }}",
+        schema="{{ var.value.ask_db_schema_name }}",
         data="{{ task_instance.xcom_pull(task_ids='read_data_from_sheet') }}",
     )
 
