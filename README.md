@@ -21,6 +21,9 @@ docker (version 20.10.24)
    - port: `2345`
    - database: `ask_db` 
    - user/password: `ask_postgres_user`
+   
+For more information see:
+[Running Apache Airflow in Docker](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html).
 
 ### Run dags
 1. Firstly configure Airflow Connection
