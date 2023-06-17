@@ -76,9 +76,9 @@ x-airflow-common:
     # for other purpose (development, test and especially production usage) build/extend Airflow image.
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   volumes:
-    - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
-    - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
-    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DAG_DIR:-.}:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_LOG_DIR:-./airflow_local_dir/logs}:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_PLUGINS_DIR:-.airflow_local_dir/plugins}:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -267,7 +267,7 @@ services:
           echo
         fi
         mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        chown -R "${AIRFLOW_UID}:${AIRFLOW_UID}" /sources/{logs,dags,plugins}
         exec /entrypoint airflow version
     # yamllint enable rule:line-length
     environment:
@@ -279,7 +279,9 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
     volumes:
-      - ${AIRFLOW_PROJ_DIR:-.}:/sources
+      - ${AIRFLOW_PROJ_DAG_DIR:-.}:/sources/dags
+      - ${AIRFLOW_PROJ_LOG_DIR:-./airflow_local_dir/logs}:/sources/logs
+      - ${AIRFLOW_PROJ_PLUGINS_DIR:-.airflow_local_dir/plugins}:/sources/plugins
 
   airflow-cli:
     <<: *airflow-common

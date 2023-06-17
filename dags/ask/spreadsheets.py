@@ -58,8 +58,20 @@ def create_sql_query_to_synchronize(
         schema: str,
         user: str,
 ) -> str:
-    drop_schema_query = f"  DROP SCHEMA IF EXISTS {schema} CASCADE;"
-    create_schema_query = f"  CREATE SCHEMA {schema} AUTHORIZATION {user};"
+    drop_schema_query = '\n'.join([
+        "  DO $$ DECLARE",
+        "      r RECORD;",
+        "  BEGIN",
+        "      FOR r IN (",
+        "              SELECT tablename",
+        "              FROM pg_tables",
+        f"             WHERE schemaname = '{schema}'",
+        "          ) LOOP",
+        f"          EXECUTE 'DROP TABLE IF EXISTS"
+        f" {schema}.' || quote_ident(r.tablename) || ' CASCADE';",
+        "      END LOOP;",
+        "  END $$;",
+    ])
     data_insertion_queries = "\n".join([
         (
             f"  CREATE TABLE \"{schema}\".\"{sheet['name']}\" (\n"
@@ -78,7 +90,6 @@ def create_sql_query_to_synchronize(
     query = (
         "\nBEGIN;\n"
         f"{drop_schema_query}\n"
-        f"{create_schema_query}\n"
         f"{data_insertion_queries}\n"
         "COMMIT;"
     )
